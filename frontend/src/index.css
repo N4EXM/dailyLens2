@@ -1,0 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import "tailwindcss";
+
+@theme {
+
+    /* fonts */
+    --font-poppins: "Poppins";
+
+    /* breakpoints */
+    --breakpoint-mmo: 360px; /* medium sized phones */
+    --breakpoint-ta: 480px;  /* tablets */
+    --breakpoint-sd: 769px;  /* small desktops */
+    --breakpoint-ld: 1025px; /* large desktops */
+
+    /* colours */
+
+    /* light */
+    --color-background: #e2e8f0;
+    --color-secBackground: #f9fafb;
+    --color-text: #0f172a;
+    --color-primary: #3b82f6;
+    --color-secondary: #60a5fa;
+    --color-tertiary: #93c5fd;
+
+    /* dark */
+    --color-darkBackground: #1e293b;
+    --color-secDarkBackground: #0f172a;
+    --color-darkText: #f8fafc;
+    --color-darkPrimary: #0ea5e9;
+    --color-darkSecondary: #38bdf8;
+    --color-darkTertiary: #7dd3fc;
+
+    /* text sizes */
+    --text-ssm: 12px;  
+    --text-ssm-line-height: var(--tw-leading, var(--text-sm--line-height));
+    --text-xxs:10px;
+    --text-xxs-line-height: var((--tw-leading, var(--text-xs--line-height)))
+}
+
+/* For Webkit-based browsers (Chrome, Safari and Opera) */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+/* For IE, Edge and Firefox */
+.scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
