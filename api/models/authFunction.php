@@ -51,6 +51,9 @@ function login($pdo, $username, $password): void {
         $_SESSION['user_role'] = $user['role'];
         $_SESSION['logged_in'] = true;
         $_SESSION['last_activity'] = time();
+        $_SESSION['first_name'] = $user['first_name'];
+        $_SESSION['last_name'] = $user['last_name'];
+        $_SESSION['email'] = $user['email'];
 
         // Set secure cookie
         setcookie(
@@ -66,7 +69,10 @@ function login($pdo, $username, $password): void {
             'user' => [
                 'id' => $user['id'],
                 'username' => $user['username'],
-                'role' => $user['role']
+                'role' => $user['role'],
+                'email' => $user['email'],
+                'first_name'=> $user['first_name'],
+                'last_name'=> $user['last_name'],     
             ]
         ]);
         exit();
@@ -88,24 +94,27 @@ function login($pdo, $username, $password): void {
 
 }
 
-function register($pdo, $username, $password): void {
+function register($pdo, $username, $password, $email, $first_name, $last_name): void {
     header('Content-Type: application/json');
     
     $username = trim($username);
     $password = trim($password);
+    $email = trim($email);
+    $first_name = trim($first_name);
+    $last_name = trim($last_name);
 
     try {
-        if (empty($username) || empty($password)) {
+        if (empty($username) || empty($password) || empty($email) || empty($first_name) || empty($last_name)) {
             http_response_code(400);
             echo json_encode([
                 "success" => false,
-                "message" => "Username or password is empty."
+                "message" => "Username, first name, last name, email or password is empty."
             ]);
             exit();
         }
 
         // Check if user exists
-        $stmt = $pdo->prepare("SELECT id FROM users WHERE username = ?");
+        $stmt = $pdo->prepare("SELECT user_id FROM users WHERE username = ?");
         $stmt->execute([$username]);
         $existingUser = $stmt->fetch(PDO::FETCH_ASSOC);
         
@@ -124,9 +133,9 @@ function register($pdo, $username, $password): void {
             throw new Exception("Password hashing failed");
         }
         
+        $stmt = $pdo->prepare("INSERT INTO users (username, first_name, last_name, email,password_hash) VALUES (?, ?, ?, ?, ?)");
         // Insert the user
-        $stmt = $pdo->prepare("INSERT INTO users (username, password_hash) VALUES (?, ?)");
-        $success = $stmt->execute([$username, $passwordHash]);
+        $success = $stmt->execute([$username, $first_name, $last_name, $email, $passwordHash]);
 
         if ($success) {
             http_response_code(201); // Created
