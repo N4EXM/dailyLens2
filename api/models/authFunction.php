@@ -143,7 +143,8 @@ function register($pdo, $username, $password, $email, $first_name, $last_name): 
                 "success" => true,
                 "message" => "Registration successful"
             ]);
-        } else {
+        } 
+        else {
             http_response_code(500);
             echo json_encode([
                 "success" => false,
