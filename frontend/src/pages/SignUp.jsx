@@ -1,17 +1,86 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 const SignUp = () => {
 
-  const [name, setName] = useState("")
+  const [username, setUserame] = useState("")
   const [email, setEmail] = useState("")
+  const [firstName, setFirstName] = useState("")
+  const [lastName, setLastName] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
-  const [contactNumber, setContactNumber] = useState("")
+
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
 
   const navigate = useNavigate()
-  
+
+  const handleRegisterSubmit = async (e) => {
+
+    e.preventDefault()
+    
+    setIsLoading(true)
+    setError("")
+
+    if (password !== confirmPassword) {
+      setError("Password does not match")
+      return;
+    }
+
+    if (password.length < 8) {
+      setError("Password needs to be 8 characters or more")
+      return;
+    }
+
+    try {
+
+      const response = await fetch("http://localhost:3000/api/models/authFunction.php?action=register", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-type": "application/json"
+        },
+        body: JSON.stringify({
+          username, 
+          firstName,
+          lastName,
+          email,
+          password
+        })
+      })
+
+      const data = await response.json()
+      console.log("registration response", data);
+
+      if (!response.ok) {
+        throw new Error(data.message || "Registration failed")
+      }
+
+      if (data.success) {
+        console.log("yay")
+      }
+
+      else {
+        setError(data.message || 'Registration failed');
+      }
+
+    }
+    catch (error) {
+      console.error('Registration error:', error);
+      setError(error.message || 'Failed to complete registration');
+    } 
+    finally {
+      setIsLoading(false);
+    }
+
+  }
+
+  // useEffect(() => {
+  //   console.log(password)
+  //   console.log(confirmPassword)
+  // }, [confirmPassword, password])
+
   return (
     <div 
       className='w-full h-full p-5 flex flex-col gap-4 mmo:gap-6 z-10 relative pt-34 mmo:pt-36'
@@ -34,38 +103,66 @@ const SignUp = () => {
 
       <form
         className='flex flex-col gap-5 pt-2'
-        // onSubmit={(e) => {e.preventDefault()}}
+        onSubmit={(e) => handleRegisterSubmit(e)}
       >
 
-        {/* name */}
+        {/* username */}
         <div className='flex flex-col w-full h-fit gap-2'>
-          <label htmlFor="emailField" className='text-sm font-medium pl-0.5'>Name:</label>
+          <label htmlFor="usernameField" className='text-sm font-medium pl-0.5'>Username:</label>
           <div className='relative w-full h-fit'>
             <i className='absolute top-[9px] left-2.5 text-primary dark:text-darkPrimary'>
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"  
-                fill="currentColor" viewBox="0 0 24 24" >
-                <path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5m0-8c1.65 0 3 1.35 3 3s-1.35 3-3 3-3-1.35-3-3 1.35-3 3-3M4 22h16c.55 0 1-.45 1-1v-1c0-3.86-3.14-7-7-7h-4c-3.86 0-7 3.14-7 7v1c0 .55.45 1 1 1m6-7h4c2.76 0 5 2.24 5 5H5c0-2.76 2.24-5 5-5"></path>
-              </svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><g fill="none" fill-rule="evenodd"><path d="m12.594 23.258l-.012.002l-.071.035l-.02.004l-.014-.004l-.071-.036q-.016-.004-.024.006l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427q-.004-.016-.016-.018m.264-.113l-.014.002l-.184.093l-.01.01l-.003.011l.018.43l.005.012l.008.008l.201.092q.019.005.029-.008l.004-.014l-.034-.614q-.005-.019-.02-.022m-.715.002a.02.02 0 0 0-.027.006l-.006.014l-.034.614q.001.018.017.024l.015-.002l.201-.093l.01-.008l.003-.011l.018-.43l-.003-.012l-.01-.01z"/><path fill="currentColor" d="M12 2c5.523 0 10 4.477 10 10a9.96 9.96 0 0 1-2.258 6.33l.02.022l-.132.112A9.98 9.98 0 0 1 12 22c-2.95 0-5.6-1.277-7.43-3.307l-.2-.23l-.132-.11l.02-.024A9.96 9.96 0 0 1 2 12C2 6.477 6.477 2 12 2m0 15c-1.86 0-3.541.592-4.793 1.406A7.97 7.97 0 0 0 12 20a7.97 7.97 0 0 0 4.793-1.594A8.9 8.9 0 0 0 12 17m0-13a8 8 0 0 0-6.258 12.984C7.363 15.821 9.575 15 12 15s4.637.821 6.258 1.984A8 8 0 0 0 12 4m0 2a4 4 0 1 1 0 8a4 4 0 0 1 0-8m0 2a2 2 0 1 0 0 4a2 2 0 0 0 0-4"/></g></svg>
             </i>
             <input 
               type="text" 
-              placeholder='Enter your Name'
-              value={name} 
-              onChange={(e) => setName(e.target.value)} 
+              placeholder='Enter your username'
+              value={username} 
+              onChange={(e) => setUserame(e.target.value)} 
               className='w-full p-2 rounded-md border text-sm border-text/20 dark:border-darkText/20 bg-secBackground dark:bg-secDarkBackground pl-10 outline-none'
             />
           </div>
         </div>
 
-        {/* email */}
+        {/* first name */}
+        <div className='flex flex-col w-full h-fit gap-2'>
+          <label htmlFor="firstNameField" className='text-sm font-medium pl-0.5'>First Name:</label>
+          <div className='relative w-full h-fit'>
+            <i className='absolute top-[9px] left-2.5 text-primary dark:text-darkPrimary'>
+             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a5 5 0 1 0 5 5a5 5 0 0 0-5-5m0 8a3 3 0 1 1 3-3a3 3 0 0 1-3 3m9 11v-1a7 7 0 0 0-7-7h-4a7 7 0 0 0-7 7v1h2v-1a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v1z"/></svg>
+            </i>
+            <input 
+              type="text" 
+              placeholder='Enter your first name'
+              value={firstName} 
+              onChange={(e) => setFirstName(e.target.value)} 
+              className='w-full p-2 rounded-md border text-sm border-text/20 dark:border-darkText/20 bg-secBackground dark:bg-secDarkBackground pl-10 outline-none'
+            />
+          </div>
+        </div>
+
+        {/* last name */}
+        <div className='flex flex-col w-full h-fit gap-2'>
+          <label htmlFor="lastNameField" className='text-sm font-medium pl-0.5'>Last Name:</label>
+          <div className='relative w-full h-fit'>
+            <i className='absolute top-[9px] left-2.5 text-primary dark:text-darkPrimary'>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a5 5 0 1 0 5 5a5 5 0 0 0-5-5m0 8a3 3 0 1 1 3-3a3 3 0 0 1-3 3m9 11v-1a7 7 0 0 0-7-7h-4a7 7 0 0 0-7 7v1h2v-1a5 5 0 0 1 5-5h4a5 5 0 0 1 5 5v1z"/></svg>
+            </i>
+            <input 
+              type="text" 
+              placeholder='Enter your last name'
+              value={lastName} 
+              onChange={(e) => setLastName(e.target.value)} 
+              className='w-full p-2 rounded-md border text-sm border-text/20 dark:border-darkText/20 bg-secBackground dark:bg-secDarkBackground pl-10 outline-none'
+            />
+          </div>
+        </div>
+
+        {/* email field */}
         <div className='flex flex-col w-full h-fit gap-2'>
           <label htmlFor="emailField" className='text-sm font-medium pl-0.5'>Email:</label>
           <div className='relative w-full h-fit'>
             <i className='absolute top-[9px] left-2.5 text-primary dark:text-darkPrimary'>
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"  
-                fill="currentColor" viewBox="0 0 24 24" >
-                <path d="m20,4H4c-1.1,0-2,.9-2,2v12c0,1.1.9,2,2,2h16c1.1,0,2-.9,2-2V6c0-1.1-.9-2-2-2Zm-8.61,10.79c.18.14.4.21.61.21s.43-.07.61-.21l1.55-1.21,4.42,4.42H5.41l4.42-4.42,1.55,1.21Zm8.61-8.79v.51s-8,6.22-8,6.22L4,6.51v-.51h16Zm0,3.04v7.54s-4.24-4.24-4.24-4.24l4.24-3.3Zm-11.76,3.3l-4.24,4.24v-7.54l4.24,3.3Zm11.76,5.66h0s0,0,0,0h0Z"></path>
-              </svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"><path fill="currentColor" d="M4 20q-.825 0-1.412-.587T2 18V6q0-.825.588-1.412T4 4h16q.825 0 1.413.588T22 6v12q0 .825-.587 1.413T20 20zm8-7L4 8v10h16V8zm0-2l8-5H4zM4 8V6v12z"/></svg>
             </i>
             <input 
               type="text" 
@@ -115,7 +212,7 @@ const SignUp = () => {
 
         {/* confirm password */}
         <div className='flex flex-col w-full h-fit gap-2'>
-          <label htmlFor="passwordField" className='text-sm font-medium pl-0.5'>Confirm your password:</label>
+          <label htmlFor="confirmPasswordField" className='text-sm font-medium pl-0.5'>Confirm your password:</label>
           <div className='relative w-full h-fit'>
             <i className='absolute top-[9px] left-2.5 text-primary dark:text-darkPrimary'>
               <svg  xmlns="http://www.w3.org/2000/svg" width="20" height="20"  
@@ -149,32 +246,24 @@ const SignUp = () => {
           </div>
         </div>
 
-        {/* contact number */}
-        <div className='flex flex-col w-full h-fit gap-2'>
-          <label htmlFor="emailField" className='text-sm font-medium pl-0.5'>Contact number:</label>
-          <div className='relative w-full h-fit'>
-            <i className='absolute top-[9px] left-2.5 text-primary dark:text-darkPrimary'>
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"  
-                fill="currentColor" viewBox="0 0 24 24" >
-                <path d="M18.07 22h.35c.47-.02.9-.26 1.17-.64l2.14-3.09c.23-.33.32-.74.24-1.14s-.31-.74-.64-.97l-4.64-3.09a1.47 1.47 0 0 0-.83-.25c-.41 0-.81.16-1.1.48l-1.47 1.59c-.69-.43-1.61-1.07-2.36-1.82-.72-.72-1.37-1.64-1.82-2.36l1.59-1.47c.54-.5.64-1.32.23-1.93L7.84 2.67c-.22-.33-.57-.57-.97-.64a1.455 1.455 0 0 0-1.13.24L2.65 4.41c-.39.27-.62.7-.64 1.17-.03.69-.16 6.9 4.68 11.74 4.35 4.35 9.81 4.69 11.38 4.69ZM6.88 10.05c-.16.15-.21.39-.11.59.05.09 1.15 2.24 2.74 3.84 1.6 1.6 3.75 2.7 3.84 2.75.2.1.44.06.59-.11l1.99-2.15 3.86 2.57-1.7 2.46c-1.16 0-6.13-.24-9.99-4.1S4 7.06 4 5.91l2.46-1.7 2.57 3.86-2.15 1.99Z"></path>
-              </svg>
-            </i>
-            <input 
-              type="text" 
-              placeholder='Enter your contact number'
-              value={contactNumber} 
-              onChange={(e) => setContactNumber(e.target.value = e.target.value.replace(/\D/g, ''))} 
-              className='w-full p-2 rounded-md border text-sm border-text/20 dark:border-darkText/20 bg-secBackground dark:bg-secDarkBackground pl-10 outline-none'
-            />
-          </div>
-        </div>
-
         {/* submit and sign in button */}
         <div className='w-full h-fit flex-col flex gap-5'>
+
+          {error !== "" &&
+            <p
+              className='text-center font-medium dark:text-rose-400 text-rose-500'
+            >
+              {error}
+            </p>
+          }
+
           <button 
-            className='font-medium p-2 w-full text-darkText bg-primary dark:bg-darkPrimary mt-8 rounded-md'
+            className='font-medium p-2 w-full text-darkText bg-primary dark:bg-darkPrimary mt-2 rounded-md'
           >
-            Sign in
+            {isLoading 
+              ? "Processing..."
+              : "Submit"
+            }
           </button>
           <button
             onClick={() => navigate("/Login")}
