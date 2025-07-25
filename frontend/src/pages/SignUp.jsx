@@ -35,7 +35,7 @@ const SignUp = () => {
 
     try {
 
-      const response = await fetch("http://localhost:3000/api/models/authFunction.php?action=register", {
+      const response = await fetch("http://localhost:3000/api/routes/userApi.php?action=register", {
         method: "POST",
         credentials: "include",
         headers: {

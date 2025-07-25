@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 require "./../config/database.php";
-require "./../models/auth_functions.php";
+require "./../models/authFunctions.php";
 
 // Start session
 session_start([
