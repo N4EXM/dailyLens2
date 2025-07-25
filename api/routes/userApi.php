@@ -6,7 +6,7 @@ ini_set('log_errors', '1');
 error_reporting(E_ALL);
 
 // Start output buffering
-ob_start();
+ob_start(); 
 
 // Set headers FIRST
 header("Content-Type: application/json; charset=UTF-8");

@@ -1,6 +1,7 @@
 import React, {useState, useRef, useEffect} from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { useAutoResizeTextarea } from '../hooks/useAutoResizeTextArea'
+import { useAuth } from '../context/AuthContext'
 
 const CreateArticle = () => {
 
@@ -10,6 +11,7 @@ const CreateArticle = () => {
         navigate(-1)
     }
 
+    const { isAuthenticated } = useAuth()
     const [title, setTitle] = useState("") // article title
     const [selectedCategory, setSelectedCategory] = useState("No selected category")
     const [content, setContent] = useState("")  // article content
@@ -100,8 +102,9 @@ const CreateArticle = () => {
         };
     }, [dropCategoryActive]);
 
-  return (
-    <div className='w-full h-full p-5 flex flex-col gap-5 z-10 relative'>
+    if (isAuthenticated) {
+        return (
+            <div className='w-full h-full p-5 flex flex-col gap-5 z-10 relative'>
         
         {/* go back to previous page */}
         {isWarningBoxActive &&
@@ -234,8 +237,26 @@ const CreateArticle = () => {
             </button>
         </div>
 
-    </div>
-  )
+            </div>
+        )
+    }
+    else {
+        return (
+            <div className='w-full h-full p-5 flex flex-col items-center justify-center gap-5 pb-24 z-10 relative bg-background dark:bg-darkBackground min-h-screen'>
+                <h1
+                    className='text-lg font-semibold text-text/70 dark:text-darkText/70'
+                >
+                    sign in to create an article
+                </h1>
+                <Link
+                    to={"/login"}
+                    className='text-sm text-darkText bg-primary p-2 font-medium px-5 rounded-md dark:bg-darkPrimary'        
+                >
+                    Sign in
+                </Link>
+            </div>
+        )
+    }
 }
 
 export default CreateArticle
