@@ -61,10 +61,10 @@ try {
             break;
 
         case 'login':
-            if (empty($input['username']) || empty($input['password'])) {
+            if (empty($input['email']) || empty($input['password'])) {
                 throw new InvalidArgumentException('Username and password are required');
             }
-            $response = login($pdo, $input['username'], $input['password']);
+            $response = login($pdo, $input['email'], $input['password']);
             break;
 
         default:

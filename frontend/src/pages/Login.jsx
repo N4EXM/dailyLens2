@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 const login = () => {
 
@@ -8,7 +9,16 @@ const login = () => {
   const [showPassword, setShowPassword] = useState(false)
   
   const navigate = useNavigate()
+  const { login, isLoading, error } = useAuth()
   
+  const handleLoginForm = (e) => {
+
+    e.preventDefault()
+
+    login(email, password)
+
+  } 
+
   return (
     <div 
       className='w-full h-full p-5 flex flex-col gap-6 z-10 relative pt-32'
@@ -31,7 +41,7 @@ const login = () => {
 
       <form
         className='flex flex-col gap-5 pt-2'
-        // onSubmit={(e) => {e.preventDefault()}}
+        onSubmit={(e) => handleLoginForm(e)}
       >
         {/* email */}
         <div className='flex flex-col w-full h-fit gap-2'>
@@ -95,11 +105,20 @@ const login = () => {
           </button>
         </div>
         
+        <p
+          className='text-center font-medium text-sm text-rose-400 dark:text-rose-500'
+        >
+          {error}
+        </p>
+
         <div className='w-full h-fit flex-col flex gap-5'>
           <button 
             className='font-medium p-2 w-full text-darkText bg-primary dark:bg-darkPrimary mt-8 rounded-md'
           >
-            Sign in
+            {isLoading
+              ? "Processing..."
+              : "Sign in"
+            }
           </button>
           <button
             onClick={() => navigate("/SignUp")}

@@ -9,7 +9,7 @@ import { useAuth } from '../context/AuthContext'
 const Settings = () => {
 
   const [warningBox, setWarningBox] = useState(false)
-  const { isAuthenticated } = useAuth
+  const { isAuthenticated } = useAuth()
 
   const userDetails = {
     image: null,

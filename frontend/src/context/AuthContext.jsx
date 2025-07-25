@@ -8,9 +8,10 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState({})
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState("")
   const navigate = useNavigate()
 
-  const login = async (username, password) => {
+  const login = async (email, password) => {
 
     setIsLoading(true)
 
@@ -22,18 +23,20 @@ export const AuthProvider = ({ children }) => {
         "Content-type": "application/json"
       },
       body: JSON.stringify({
-        username,
+        email,
         password
       })
     })
     const data = await response.json();
           
       if (data.success && data.user != null) {
+          setError("")
           setUser(data.user); // sets the values of the user e.g their username 
           setIsAuthenticated(true); // 
           navigate("/");
           return true;
       }
+      setError(data.message)
       return false;
     } 
     catch (error) {
@@ -107,7 +110,8 @@ export const AuthProvider = ({ children }) => {
       isAuthenticated, 
       isLoading, 
       login, 
-      logout 
+      logout,
+      error
     }}>
       {children}
     </AuthContext.Provider>

@@ -10,7 +10,7 @@ $cookieSettings = [
     'samesite' => 'Lax'
 ];
 
-function login($pdo, $username, $password): void {
+function login($pdo, $email, $password): void {
     
     global $cookieSettings;
 
@@ -26,16 +26,16 @@ function login($pdo, $username, $password): void {
 
     try {
         // Validate input
-        $username = trim($username);
+        $email = trim($email);
         $password = trim($password);
         
-        if (empty($username) || empty($password)) {
-            throw new InvalidArgumentException('Username and password are required');
+        if (empty($email) || empty($password)) {
+            throw new InvalidArgumentException('email and password are required');
         }
 
         // Check user exists
-        $stmt = $pdo->prepare("SELECT * FROM users WHERE username = ?");
-        $stmt->execute([$username]);
+        $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
+        $stmt->execute([$email]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$user || !password_verify($password, $user['password_hash'])) {
@@ -73,6 +73,7 @@ function login($pdo, $username, $password): void {
                 'email' => $user['email'],
                 'first_name'=> $user['first_name'],
                 'last_name'=> $user['last_name'],     
+                "image" => $user["image"],
             ]
         ]);
         exit();
@@ -93,103 +94,6 @@ function login($pdo, $username, $password): void {
     }
 
 }
-
-// function register($pdo, $username, $password, $email, $first_name, $last_name): void {
-
-//     // Set headers right at the start
-//     http_response_code(200); // Default OK status
-
-//     // Clear any previous output
-//     if (ob_get_length()) ob_clean();
-
-//     $username = trim($username);
-//     $password = trim($password);
-//     $email = trim($email);
-//     $first_name = trim($first_name);
-//     $last_name = trim($last_name);
-
-//     try {
-
-//         if (empty($username) || empty($password) || empty($email) || empty($first_name) || empty($last_name)) {
-//             http_response_code(400);
-//             echo json_encode([
-//                 "success" => false,
-//                 "message" => "Username, first name, last name, email or password is empty."
-//             ]);
-//             return;
-//         }
-
-//         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-//             http_response_code(400);
-//             echo json_encode([
-//                 "success" => false,
-//                 "message" => "Invalid email format."
-//             ]);
-//             return;
-//         }
-
-//         // Check if user exists
-//         $stmt = $pdo->prepare("SELECT user_id FROM users WHERE username = ? OR email = ?");
-//         $stmt->execute([$username, $email]);
-//         $existingUser = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-//         if ($existingUser) {
-//             http_response_code(409); // Conflict
-//             echo json_encode([
-//                 "success" => false,
-//                 "message" => "User or email already exists"
-//             ]);
-//             return;
-//         }
-        
-//         // Hash the password
-//         $passwordHash = password_hash($password, PASSWORD_BCRYPT);
-//         if ($passwordHash === false) {
-//             throw new Exception("Password hashing failed");
-//         }
-        
-//         $stmt = $pdo->prepare("INSERT INTO users (username, first_name, last_name, email,password_hash) VALUES (?, ?, ?, ?, ?)");
-//         // Insert the user
-//         $stmt->execute([$username, $first_name, $last_name, $email, $passwordHash]);
-
-//         if ($stmt->rowCount() > 0) {
-//             // $pdo->commit();
-//             http_response_code(response_code: 201); 
-//             echo json_encode(value: [
-//                 "success" => true,
-//                 "message" => "Registration successful"
-//             ]);
-//         } 
-//         else {
-//             $pdo -> rollBack();
-//             http_response_code(500);
-//             echo json_encode([
-//                 "success" => false,
-//                 "message" => "Registration failed"
-//             ]);
-//         }
-//     } 
-//     catch (PDOException $e) {
-//         if (isset($pdo) && $pdo->inTransaction()) {
-//             $pdo->rollBack();
-//         }
-//         http_response_code(500);
-//         echo json_encode([
-//             "success" => false,
-//             "message" => "Database error",
-//             "error" => $e->getMessage()
-//         ]); 
-//     } 
-//     catch (Exception $e) {
-//         http_response_code(500);
-//         echo json_encode([
-//             "success" => false,
-//             "message" => "Registration error",
-//             "error" => $e->getMessage()
-//         ]);
-//     }
-
-// }
 
 function register($pdo, $username, $password, $email, $first_name, $last_name): void {
     // Clear any previous output
@@ -258,7 +162,8 @@ function register($pdo, $username, $password, $email, $first_name, $last_name): 
             ]);
             exit();
         }
-    } catch (PDOException $e) {
+    } 
+    catch (PDOException $e) {
         http_response_code(500);
         echo json_encode([
             "success" => false,
@@ -266,7 +171,8 @@ function register($pdo, $username, $password, $email, $first_name, $last_name): 
             "error" => $e->getMessage()
         ]); 
         exit();
-    } catch (Exception $e) {
+    } 
+    catch (Exception $e) {
         http_response_code(500);
         echo json_encode([
             "success" => false,

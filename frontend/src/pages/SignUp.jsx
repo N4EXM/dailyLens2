@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 const SignUp = () => {
 
@@ -10,6 +11,7 @@ const SignUp = () => {
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
+  const { login } = useAuth()
 
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
@@ -59,6 +61,7 @@ const SignUp = () => {
 
       if (data.success) {
         console.log("yay")
+        login(email, password)
       }
 
       else {

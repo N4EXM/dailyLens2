@@ -1,7 +1,10 @@
 import React, {useState} from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../../context/AuthContext'
 
 const UserCard = ({ userDetails, editFunction, toggleWarningBox }) => {
+
+  const { user } = useAuth()
 
   return (
     <div className='flex flex-col p-5 gap-2 bg-secBackground dark:bg-secDarkBackground rounded-md relative'>
@@ -29,7 +32,7 @@ const UserCard = ({ userDetails, editFunction, toggleWarningBox }) => {
           
           <div className='relative'>
             <div className={`w-16 h-16 object-center ${userDetails.image === null ? "" : "p-1"} rounded-full bg-background dark:bg-darkBackground border-2 border-primary dark:border-darkPrimary`}>
-              {userDetails.image === null ? 
+              {user.image === null ? 
                   <i className='w-full h-full flex items-center justify-center text-text dark:text-darkText'>
                     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"  
                       fill="currentColor" viewBox="0 0 24 24" >
@@ -38,13 +41,14 @@ const UserCard = ({ userDetails, editFunction, toggleWarningBox }) => {
                   </i>
                   
                 : 
-                  <img src={userDetails.image} className='w-full h-full rounded-full' alt="" />
+                  <img src={user.image} className='w-full h-full rounded-full' alt="" />
               }
             </div>
           </div>  
           <div className='w-fit gap-0.5 h-full flex flex-col items-start justify-start'>
-            <h1 className='font-bold text-lg'>{userDetails.firstName} {userDetails.lastName}</h1>
-            <p className='text-xs text-text/60 dark:text-darkText/80'>{userDetails.email}</p>
+            <h1 className='font-bold text-lg'>{user.username}</h1>
+            <p className='text-xs text-text/60 dark:text-darkText/80'>{user.first_name} {user.last_name}</p>
+            <p className='text-xs text-text/60 dark:text-darkText/80'>{user.email}</p>
             <p className='text-xs text-text/60 dark:text-darkText/80'>{userDetails.contactNumber}</p>
           </div>
 
