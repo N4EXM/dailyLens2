@@ -46,7 +46,7 @@ function login($pdo, $email, $password): void {
         session_regenerate_id(true);
 
         // Set session variables - THIS IS THE CRUCIAL PART
-        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['user_id'] = $user['user_id'];
         $_SESSION['username'] = $user['username'];
         $_SESSION['user_role'] = $user['role'];
         $_SESSION['logged_in'] = true;
@@ -64,10 +64,10 @@ function login($pdo, $email, $password): void {
 
         // Return success response
         header('Content-Type: application/json');
+        http_response_code(201);
         echo json_encode([
             'success' => true,
             'user' => [
-                'id' => $user['id'],
                 'username' => $user['username'],
                 'role' => $user['role'],
                 'email' => $user['email'],
@@ -196,11 +196,103 @@ function auth_check(): array {
     return [
         'authenticated' => true,
         'user' => [
-            'id' => $_SESSION['user_id'],
+            'id' => $_SESSION['id'],
             'username' => $_SESSION['username'],
-            'role' => $_SESSION['user_role']
+            'role' => $_SESSION['role'],
+            'email' => $_SESSION['email'],
+            'first_name'=> $_SESSION['first_name'],
+            'last_name'=> $_SESSION['last_name'],     
+            "image" => $_SESSION["image"],
         ]
     ];
+}
+
+// function logout(): array {
+
+//     // Start session if not already started
+//     if (session_status() === PHP_SESSION_NONE) {
+//         session_start();
+//     }
+
+//     // Initialize response
+//     $response = ['success' => false, 'message' => 'Logout failed'];
+
+//     // Unset all session variables
+//     $_SESSION = [];
+
+//     // Delete session cookie
+//     if (ini_get("session.use_cookies")) {
+//         $params = session_get_cookie_params();
+//         setcookie(
+//             session_name(),
+//             '',
+//             time() - 42000,
+//             $params["path"],
+//             $params["domain"],
+//             $params["secure"],
+//             $params["httponly"]
+//         );
+//     }
+
+//     // Destroy the session
+//     if (session_destroy()) {
+//         $response = ['success' => true, 'message' => 'Logout successful'];
+//         return $response;
+//     }
+
+//     // Also delete the auth_session cookie
+//     setcookie('auth_session', '', [
+//         'expires' => time() - 3600,
+//         'path' => '/',
+//         'domain' => 'localhost',
+//         'secure' => false,
+//         'httponly' => true,
+//         'samesite' => 'Lax'
+//     ]);
+
+//     return $response;
+// }
+
+function logout(): array {
+    // Start session if not already started
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    // Store response before destroying session
+    $response = ['success' => true, 'message' => 'Logout successful'];
+
+    // Delete the auth_session cookie first
+    setcookie('auth_session', '', [
+        'expires' => time() - 3600,
+        'path' => '/',
+        'domain' => 'localhost',
+        'secure' => false,
+        'httponly' => true,
+        'samesite' => 'Lax'
+    ]);
+
+    // Clear session data
+    $_SESSION = [];
+
+    // Delete session cookie
+    if (ini_get("session.use_cookies")) {
+        $params = session_get_cookie_params();
+        setcookie(
+            session_name(),
+            '',
+            time() - 42000,
+            $params["path"],
+            $params["domain"],
+            $params["secure"],
+            $params["httponly"]
+        );
+    }
+
+    // Destroy the session
+    session_destroy();
+
+    return $response;
 }
 
 ?>

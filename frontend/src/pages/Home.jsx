@@ -76,11 +76,6 @@ fill="currentColor" viewBox="0 0 24 24" >
     }
   }
 
-  useEffect(() => {
-    handleCategory("Recommended")
-    console.log(currentCategory)
-  }, [])
-
   return (
     <div className='w-full h-full p-5 flex flex-col gap-5 pb-24 relative z-10'>
 

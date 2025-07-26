@@ -51,58 +51,71 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await fetch('http://localhost:3000/backend/userApi.php?action=logout', {
-        credentials: 'include'
+      const response = await fetch('http://localhost:3000/api/routes/userApi.php?action=logout', {
+        credentials: 'include',
+        headers: {
+          "Content-type": "application/json"
+        },
       });
-      setUser(null);
-      setIsAuthenticated(false);
-      navigate('/login');
+
+      if (!response.ok) {
+        throw new Error("Logout failed")
+      }
+
+      const data = await response.json()
+
+      if (data.success) {
+        setUser(null);
+        setIsAuthenticated(false);
+        navigate('/login');
+      }
+      
     } 
     catch (error) {
       console.error('Logout failed:', error);
     }
   };
 
-  // const checkAuth = async () => {
+  const checkAuth = async () => {
 
-  //       try {
+    try {
 
-  //           const response = await fetch("http://localhost:3000/api/routes/userApi.php?action=check-auth", {
+      const response = await fetch("http://localhost:3000/api/routes/userApi.php?action=check-auth", {
 
-  //               credentials: "include"
+          credentials: "include"
 
-  //           })
+      })
 
-  //           if (!response.ok) {
-  //               throw new Error("Auth check failed")
-  //           }
+      if (!response.ok) {
+          throw new Error("Auth check failed")
+      }
 
-  //           const data = await response.json()
+      const data = await response.json()
 
-  //           if (data.authenticated) {
-  //               setUser(data.user)
-  //               setIsAuthenticated(true)
-  //           }
+      if (data.authenticated) {
+          setUser(data.user)
+          setIsAuthenticated(true)
+      }
 
-  //           console.log(data)
+      console.log(data)
 
-  //       }
-  //       catch (error) {
-  //           console.log("Auth check error: ", error)
-  //       }
-  //       finally {
-  //           setIsLoading(false)
-  //       }
+    }
+    catch (error) {
+        console.log("Auth check error: ", error)
+    }
+    finally {
+        setIsLoading(false)
+    }
 
-  //       console.log("this ran")
+    console.log("check auth function ran")
 
-  // }
+  }
 
-  // useEffect(() => {
+  useEffect(() => {
 
-  //   checkAuth()
+    checkAuth()
 
-  // }, [])
+  }, [])
 
   return (
     <AuthContext.Provider value={{ 

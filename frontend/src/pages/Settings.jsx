@@ -9,8 +9,8 @@ import { useAppContext } from '../context/AppContext'
 
 const Settings = () => {
 
-  const { isAuthenticated } = useAuth()
-  const { warningBox, setWarningBox } = useAppContext()
+  const { isAuthenticated, logout} = useAuth()
+  const { warningBox, setWarningBox,  } = useAppContext()
 
   const navigate = useNavigate()
     
@@ -34,7 +34,7 @@ const Settings = () => {
             <button onClick={() => setWarningBox(false)} className='w-full p-2 bg-secBackground font-medium dark:bg-secBackground/10 h-fit border border-text/20 dark:border-darkText/20 text-sm rounded-sm'>
               Cancel
             </button>
-            <button onClick={() => handleNavigate("Login")} className='bg-rose-600 border border-rose-600 w-full h-fit text-darkText font-medium rounded-sm p-2 text-sm'> 
+            <button onClick={() => logout()} className='bg-rose-600 border border-rose-600 w-full h-fit text-darkText font-medium rounded-sm p-2 text-sm'> 
               Exit
             </button>
           </div>

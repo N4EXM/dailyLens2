@@ -45,6 +45,13 @@ try {
         exit();
     }
 
+    if ($action === "logout") {
+        $response = logout();
+        ob_end_clean();
+        echo json_encode($response);
+        exit();
+    }
+
     // For actions that require JSON input
     $input = json_decode(file_get_contents('php://input'), true);
     if (json_last_error() !== JSON_ERROR_NONE) {
@@ -65,7 +72,7 @@ try {
                 throw new InvalidArgumentException('Username and password are required');
             }
             $response = login($pdo, $input['email'], $input['password']);
-            break;
+            break;            
 
         default:
             $response = ['success' => false, 'message' => 'Invalid action'];

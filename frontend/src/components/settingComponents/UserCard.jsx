@@ -46,8 +46,8 @@ const UserCard = ({ editFunction, toggleWarningBox }) => {
             </div>
           </div>  
           <div className='w-fit gap-0.5 h-full flex flex-col items-start justify-start'>
-            <h1 className='font-bold text-lg'>@{user.username}</h1>
-            <p className='text-xs text-text/60 dark:text-darkText/80'>{user.email}</p>
+            <h1 className='font-bold text-lg'>{user.username}</h1>
+            <p className='text-xs text-text/60 dark:text-darkText/80'>@{user.email}</p>
             <p className='text-xs text-text/60 dark:text-darkText/80'>{user.first_name} {user.last_name}</p>
           </div>
 
