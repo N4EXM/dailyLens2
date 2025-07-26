@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 
-const UserCard = ({ userDetails, editFunction, toggleWarningBox }) => {
+const UserCard = ({ editFunction, toggleWarningBox }) => {
 
   const { user } = useAuth()
 
@@ -31,7 +31,7 @@ const UserCard = ({ userDetails, editFunction, toggleWarningBox }) => {
         <div className='flex flex-row items-start gap-4 justify-start'>
           
           <div className='relative'>
-            <div className={`w-16 h-16 object-center ${userDetails.image === null ? "" : "p-1"} rounded-full bg-background dark:bg-darkBackground border-2 border-primary dark:border-darkPrimary`}>
+            <div className={`w-16 h-16 object-center ${user.image === null ? "" : "p-1"} rounded-full bg-background dark:bg-darkBackground border-2 border-primary dark:border-darkPrimary`}>
               {user.image === null ? 
                   <i className='w-full h-full flex items-center justify-center text-text dark:text-darkText'>
                     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"  

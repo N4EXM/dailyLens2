@@ -1,5 +1,6 @@
 import React, { useState, useRef  } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 const UserEdit = () => {
   
@@ -11,6 +12,7 @@ const UserEdit = () => {
     password: "password1234"
   }
 
+  const { user } = useAuth()
   const [warningBox, setWarningBox] = useState(false)
   const [selectedImage, setSelectedImage] = useState(null) // 
   const [preview, setPreview] = useState(userDetails.image || null) // preview the current image
@@ -43,34 +45,35 @@ const UserEdit = () => {
 
 
   return (
-    <div className='w-full h-full p-5 flex flex-col gap-5 pb-24 z-10 relative'>
+    <div className={`w-full h-full p-5 flex flex-col gap-5 pb-24 z-10 relative ${warningBox && "blur-3xl"}`}>
 
         {/* go back button */}
         <button 
           onClick={() => setWarningBox(true)} 
-          className='p-2 rounded-full w-fit bg-secBackground dark:bg-secDarkBackground'>
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"  
-                fill="currentColor" viewBox="0 0 24 24" >
-                <path d="M11.79 6.29 6.09 12l5.7 5.71 1.42-1.42L9.91 13H18v-2H9.91l3.3-3.29z"></path>
-            </svg>
+          className='p-2 rounded-full w-fit bg-secBackground dark:bg-secDarkBackground'
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"  
+            fill="currentColor" viewBox="0 0 24 24" >
+            <path d="M11.79 6.29 6.09 12l5.7 5.71 1.42-1.42L9.91 13H18v-2H9.91l3.3-3.29z"></path>
+          </svg>
         </button>
 
         {/* warning box */}
         <div className={`${warningBox ? "flex" : "hidden"} border border-text/20 dark:border-darkText/20 fixed w-4/5 h-36 z-40 bg-background flex-col rounded-sm dark:bg-darkBackground flex justify-between left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2`}>
                 
-                <div className='w-full h-fit gap-1 flex p-4 flex-col'>
-                    <h1 className='text-sm font-medium h-fit'>Are you sure you want to exit</h1>
-                    <p className='w-full h-fit text-xs opacity-60'>All your data will be lost</p>
-                </div>
-                
-                <div className='w-full h-full flex items-end p-2 flex-row gap-2'>
-                    <button onClick={() => setWarningBox(false)} className='w-full p-2 bg-secBackground font-medium dark:bg-secBackground/5 h-fit border border-text/20 dark:border-darkText/20 text-sm rounded-sm'>
-                        Cancel
-                    </button>
-                    <button onClick={() => handleNavigate()} className='bg-rose-600 border border-rose-600 w-full h-fit text-darkText font-medium rounded-sm p-2 text-sm'> 
-                        Exit
-                    </button>
-                </div>
+          <div className='w-full h-fit gap-1 flex p-4 flex-col'>
+              <h1 className='text-sm font-medium h-fit'>Are you sure you want to exit</h1>
+              <p className='w-full h-fit text-xs opacity-60'>All your data will be lost</p>
+          </div>
+          
+          <div className='w-full h-full flex items-end p-2 flex-row gap-2'>
+              <button onClick={() => setWarningBox(false)} className='w-full p-2 bg-secBackground font-medium dark:bg-secBackground/5 h-fit border border-text/20 dark:border-darkText/20 text-sm rounded-sm'>
+                  Cancel
+              </button>
+              <button onClick={() => handleNavigate()} className='bg-rose-600 border border-rose-600 w-full h-fit text-darkText font-medium rounded-sm p-2 text-sm'> 
+                  Exit
+              </button>
+          </div>
 
         </div>
 
@@ -105,7 +108,7 @@ const UserEdit = () => {
                 : 
 
                 <div className='w-full h-full aspect-3/2 rounded-full'>
-                    <img src={preview} alt="" className='rounded-full w-full h-full object-cover'/>
+                  <img src={preview} alt="" className='rounded-full w-full h-full object-cover'/>
                 </div>
 
               }
