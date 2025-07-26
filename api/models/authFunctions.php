@@ -39,7 +39,7 @@ function login($pdo, $email, $password): void {
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$user || !password_verify($password, $user['password_hash'])) {
-            throw new RuntimeException('Invalid credentials');
+            throw new RuntimeException('user does not exist');
         }
 
         // Regenerate session ID to prevent session fixation

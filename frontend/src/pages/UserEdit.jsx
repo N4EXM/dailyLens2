@@ -1,6 +1,7 @@
 import React, { useState, useRef  } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useAppContext } from '../context/AppContext'
 
 const UserEdit = () => {
   
@@ -13,7 +14,7 @@ const UserEdit = () => {
   }
 
   const { user } = useAuth()
-  const [warningBox, setWarningBox] = useState(false)
+  const { warningBox, setWarningBox} = useAppContext()
   const [selectedImage, setSelectedImage] = useState(null) // 
   const [preview, setPreview] = useState(userDetails.image || null) // preview the current image
   const fileInputRef = useRef(null); // Ref to access the file input
@@ -47,17 +48,6 @@ const UserEdit = () => {
   return (
     <div className={`w-full h-full p-5 flex flex-col gap-5 pb-24 z-10 relative ${warningBox && "blur-3xl"}`}>
 
-        {/* go back button */}
-        <button 
-          onClick={() => setWarningBox(true)} 
-          className='p-2 rounded-full w-fit bg-secBackground dark:bg-secDarkBackground'
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"  
-            fill="currentColor" viewBox="0 0 24 24" >
-            <path d="M11.79 6.29 6.09 12l5.7 5.71 1.42-1.42L9.91 13H18v-2H9.91l3.3-3.29z"></path>
-          </svg>
-        </button>
-
         {/* warning box */}
         <div className={`${warningBox ? "flex" : "hidden"} border border-text/20 dark:border-darkText/20 fixed w-4/5 h-36 z-40 bg-background flex-col rounded-sm dark:bg-darkBackground flex justify-between left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2`}>
                 
@@ -76,6 +66,21 @@ const UserEdit = () => {
           </div>
 
         </div>
+
+        <div>
+
+        </div>
+
+        {/* go back button */}
+        <button 
+          onClick={() => setWarningBox(true)} 
+          className='p-2 rounded-full w-fit bg-secBackground dark:bg-secDarkBackground'
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"  
+            fill="currentColor" viewBox="0 0 24 24" >
+            <path d="M11.79 6.29 6.09 12l5.7 5.71 1.42-1.42L9.91 13H18v-2H9.91l3.3-3.29z"></path>
+          </svg>
+        </button>
 
         {/* user image */}
         <div className='w-full h-fit flex items-center justify-center relative'>
@@ -210,6 +215,7 @@ const UserEdit = () => {
               </button>
             </div>
           </div>
+
           <button 
             className='font-medium p-2 w-full text-darkText bg-primary dark:bg-darkPrimary mt-4 rounded-md'
           >

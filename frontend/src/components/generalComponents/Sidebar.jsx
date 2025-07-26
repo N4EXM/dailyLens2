@@ -1,10 +1,12 @@
 import React, {useState} from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import NavButton from './NavButton'
+import { useAppContext } from '../../context/AppContext'
 
 const Sidebar = () => {
 
     const [isSidebarActive, setIsSidebarActive] = useState(false)
+    const { warningBox } = useAppContext()
 
     const navigate = useNavigate()
     const location = useLocation()
@@ -61,7 +63,7 @@ const Sidebar = () => {
         {/* button that appears on nearly every page */}
         <button 
             onClick={() => setIsSidebarActive(true)}
-            className={`w-fit h-fit p-3 z-50 bg-primary rounded-full dark:bg-darkPrimary text-darkText fixed bottom-5 right-5 ${isHiddenRoute ? "hidden" : ""}`}
+            className={`w-fit h-fit p-3 z-50 bg-primary rounded-full dark:bg-darkPrimary text-darkText fixed bottom-5 right-5 ${isHiddenRoute ? "hidden" : ""} ${warningBox && "hidden"}`}
         >
             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"  
                 fill="currentColor" viewBox="0 0 24 24" >
