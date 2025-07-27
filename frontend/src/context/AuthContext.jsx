@@ -5,10 +5,11 @@ const AuthContext = createContext()
 
 export const AuthProvider = ({ children }) => {
 
-  const [user, setUser] = useState({})
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState("")
+  const [user, setUser] = useState({}) // gets the user details from backend
+  const [isAuthenticated, setIsAuthenticated] = useState(false) // changes pages if users are signed in
+  const [isLoading, setIsLoading] = useState(false) // side effects when a form is submitted
+  const [error, setError] = useState("") // gets errors from frontend or backend
+  const [authenticatedPassword, setAuthenticatedPassword] = useState("") // gets the password from backend going to be used for confirmPassword page
   const navigate = useNavigate()
 
   const login = async (email, password) => {
@@ -16,19 +17,19 @@ export const AuthProvider = ({ children }) => {
     setIsLoading(true)
 
     try {
-    const response = await fetch("http://localhost:3000/api/routes/userApi.php?action=login", {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-type": "application/json"
-      },
-      body: JSON.stringify({
-        email,
-        password
+      const response = await fetch("http://localhost:3000/api/routes/userApi.php?action=login", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-type": "application/json"
+        },
+        body: JSON.stringify({
+          email,
+          password
+        })
       })
-    })
-    const data = await response.json();
-          
+      const data = await response.json();
+            
       if (data.success && data.user != null) {
           setError("")
           setUser(data.user); // sets the values of the user e.g their username 
@@ -117,6 +118,10 @@ export const AuthProvider = ({ children }) => {
 
   }, [])
 
+  useEffect(() => {
+    console.log(authenticatedPassword)
+  }, [authenticatedPassword])
+
   return (
     <AuthContext.Provider value={{ 
       user, 
@@ -124,7 +129,9 @@ export const AuthProvider = ({ children }) => {
       isLoading, 
       login, 
       logout,
-      error
+      error,
+      authenticatedPassword,
+      setAuthenticatedPassword
     }}>
       {children}
     </AuthContext.Provider>

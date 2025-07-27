@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext'
 
 const ConfirmPassword= () => {
 
-  const { user } = useAuth()
+  const { user, setAuthenticatedPassword } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
 
   const [email, setEmail] = useState(user.email)
@@ -19,9 +19,17 @@ const ConfirmPassword= () => {
 
     e.preventDefault()
 
+    setIsLoading(true)
+
+    if (email === "" || password === "") {
+      setError("email or password is empty")
+      return;
+    }
+
     try {
+      
       const response = await fetch('http://localhost:3000/api/routes/userApi.php?action=confirmUser', {
-        credentials: 'include',
+        method: "POST",
         headers: {
           "Content-type": "application/json"
         },
@@ -31,15 +39,26 @@ const ConfirmPassword= () => {
         })
       });
       
-      const data = await response.json()
-
       if (!response.ok) {
         setError(data.message)
       }
+
+      const data = await response.json()
+
+      if (data.success) {
+        setAuthenticatedPassword(data.password)
+        navigate("/UserEdit")
+      }
+      else {
+        setError(data.message)
+      }
+
+      setIsLoading(false)
       
     }
-    catch (error) {
-
+    catch {
+      setIsLoading(false)
+      setError("failed to send details, try again")
     }
   }
 
@@ -48,6 +67,8 @@ const ConfirmPassword= () => {
       className='w-full h-full p-5 flex flex-col gap-6 z-10 relative pt-24'
     >
       
+
+
       <div 
         className='text-darkText w-full flex flex-col gap-2 h-fit'
       >
@@ -137,7 +158,7 @@ const ConfirmPassword= () => {
 
         <div className='w-full h-fit flex-col flex gap-5'>
           <button 
-            className='font-medium p-2 w-full text-darkText bg-primary dark:bg-darkPrimary mt-8 rounded-md'
+            className='font-medium p-2 w-full text-darkText bg-primary dark:bg-darkPrimary mt-4 rounded-md'
           >
             {isLoading
               ? "Processing..."

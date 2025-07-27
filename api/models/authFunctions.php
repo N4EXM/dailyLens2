@@ -78,7 +78,8 @@ function login($pdo, $email, $password): void {
         ]);
         exit();
 
-    } catch (Exception $e) {
+    } 
+    catch (Exception $e) {
         // Clear any partial session data on failure
         session_unset();
         session_destroy();
@@ -293,6 +294,49 @@ function logout(): array {
     session_destroy();
 
     return $response;
+}
+
+function confirmUser($pdo, $email, $password): void {
+
+    try {
+
+        $email = trim($email);
+        $password = trim($password);
+
+        if (empty($email) || empty($password)) {
+            throw new InvalidArgumentException('email and password are required');        
+        }
+
+        // Check user exists
+        $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
+        $stmt->execute([$email]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$user || !password_verify($password, $user['password_hash'])) {
+            throw new RuntimeException('user does not exist');
+        }
+
+        echo json_encode([
+            "success" => true,
+            "password"  => $password,
+        ]);
+        exit();
+
+    }
+    
+    catch (Exception $e) {
+        
+        error_log("Login error: " . $e->getMessage());
+        header('Content-Type: application/json');
+        http_response_code(401);
+        echo json_encode([
+            'success' => false,
+            'message' => $e->getMessage()
+        ]);
+        exit();
+
+    }
+
 }
 
 ?>

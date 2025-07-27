@@ -13,7 +13,7 @@ const UserEdit = () => {
     password: "password1234"
   }
 
-  const { user } = useAuth()
+  const { user, authenticatedPassword } = useAuth()
   const { warningBox, setWarningBox} = useAppContext()
   const [selectedImage, setSelectedImage] = useState(null) // 
   const [preview, setPreview] = useState(userDetails.image || null) // preview the current image
@@ -24,7 +24,7 @@ const UserEdit = () => {
   const [username, setUsername] = useState(user.username)
   const [firstName, setFirstName] = useState(user.first_name)
   const [lastName, setLastName] = useState(user.last_name)
-  const [password, setPassword] = useState(userDetails.password)
+  const [password, setPassword] = useState(authenticatedPassword)
 
 
   const navigate = useNavigate()
@@ -136,8 +136,8 @@ const UserEdit = () => {
                   </svg>
                 </i>
                 <input 
-                  value={name} 
-                  onChange={(e) => setEmail(e.target.value)} 
+                  value={username} 
+                  onChange={(e) => setUsername(e.target.value)} 
                   type="text" 
                   className='w-full p-2 rounded-md border text-sm border-text/20 dark:border-darkText/20 bg-secBackground dark:bg-secDarkBackground pl-10 outline-none'
                 />
@@ -155,14 +155,15 @@ const UserEdit = () => {
                   </svg>
                 </i>
                 <input 
-                  value={name} 
-                  onChange={(e) => setEmail(e.target.value)} 
+                  value={firstName} 
+                  onChange={(e) => setFirstName(e.target.value)} 
                   type="text" 
                   className='w-full p-2 rounded-md border text-sm border-text/20 dark:border-darkText/20 bg-secBackground dark:bg-secDarkBackground pl-10 outline-none'
                 />
               </div>
             </div>
 
+            {/* last name field */}
             <div className='flex flex-col w-full h-fit gap-2'>
               <label htmlFor="lastNameField" className='text-sm font-medium'>Last name:</label>
               <div className='relative w-full h-fit'>
@@ -173,8 +174,8 @@ const UserEdit = () => {
                   </svg>
                 </i>
                 <input 
-                  value={name} 
-                  onChange={(e) => setEmail(e.target.value)} 
+                  value={lastName} 
+                  onChange={(e) => setLastName(e.target.value)} 
                   type="text" 
                   className='w-full p-2 rounded-md border text-sm border-text/20 dark:border-darkText/20 bg-secBackground dark:bg-secDarkBackground pl-10 outline-none'
                 />

@@ -74,6 +74,13 @@ try {
             $response = login($pdo, $input['email'], $input['password']);
             break;            
 
+        case 'confirmUser':
+            if (empty($input['email']) || empty($input['password'])) {
+                throw new InvalidArgumentException('Username and password are required');
+            }
+            $response = confirmUser($pdo, $input['email'], $input['password']);
+            break;
+
         default:
             $response = ['success' => false, 'message' => 'Invalid action'];
             break;

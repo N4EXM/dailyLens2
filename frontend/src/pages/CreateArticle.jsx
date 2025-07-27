@@ -2,16 +2,12 @@ import React, {useState, useRef, useEffect} from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAutoResizeTextarea } from '../hooks/useAutoResizeTextArea'
 import { useAuth } from '../context/AuthContext'
+import { useAppContext } from '../context/AppContext'
 
 const CreateArticle = () => {
 
-    const navigate = useNavigate()
-    
-    const handleNavigate = () => {
-        navigate(-1)
-    }
-
     const { isAuthenticated } = useAuth()
+    const { warningBox, setWarningBox } = useAppContext() 
     const [title, setTitle] = useState("") // article title
     const [selectedCategory, setSelectedCategory] = useState("No selected category")
     const [content, setContent] = useState("")  // article content
@@ -21,7 +17,6 @@ const CreateArticle = () => {
     const [dropCategoryActive, setDropCategoryActive] = useState(false)
     const dropDownRef = useRef(null)
     const fileInputRef = useRef(null); // Ref to access the file input
-    const [isWarningBoxActive, setIsWarningBoxActive] = useState(false)
     const textAreaRef = useAutoResizeTextarea(content) // textArea hook
     const categories = [
         {
@@ -57,6 +52,12 @@ const CreateArticle = () => {
             </svg>
         },
     ]
+    const navigate = useNavigate()
+    
+    const handleNavigate = () => {
+        setWarningBox(false)   
+        navigate(-1)
+    }
 
     const handleImageChange = (e) => {
         e.preventDefault()
@@ -106,140 +107,147 @@ const CreateArticle = () => {
         return (
             <div className='w-full h-full p-5 flex flex-col gap-5 z-10 relative'>
         
-        {/* go back to previous page */}
-        {isWarningBoxActive &&
-        
-            <div className='border border-text/20 dark:border-darkText/20 fixed w-4/5 h-36 z-40 bg-background flex-col rounded-sm dark:bg-darkBackground flex justify-between left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2'>
-                
-                <div className='w-full h-fit gap-1 flex p-4 flex-col'>
-                    <h1 className='text-sm font-medium h-fit'>Are you sure you want to exit</h1>
-                    <p className='w-full h-fit text-xs opacity-60'>All your data will be lost</p>
-                </div>
-                
-                <div className='w-full h-full flex items-end p-2 flex-row gap-2'>
-                    <button onClick={() => setIsWarningBoxActive(false)} className='w-full p-2 bg-secBackground font-medium dark:bg-secBackground/5 h-fit border border-text/20 dark:border-darkText/20 text-sm rounded-sm'>
-                        Cancel
-                    </button>
-                    <button onClick={() => handleNavigate()} className='bg-rose-600 border border-rose-600 w-full h-fit text-darkText font-medium rounded-sm p-2 text-sm'> 
-                        Exit
-                    </button>
-                </div>
-
-            </div>
-        }
-
-        {/* toggle exit function */}
-        <button onClick={() => setIsWarningBoxActive(true)} className='p-2 rounded-full w-fit bg-secBackground dark:bg-secDarkBackground'>
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"  
-                fill="currentColor" viewBox="0 0 24 24" >
-                <path d="M11.79 6.29 6.09 12l5.7 5.71 1.42-1.42L9.91 13H18v-2H9.91l3.3-3.29z"></path>
-            </svg>
-        </button>
-
-        {preview != null ?
-            <div className='w-full h-full relative'>
-                <button onClick={() => handleRemoveImage()} className='p-2 absolute right-3 top-3 z-20 bg-darkBackground/80 w-fit rounded-full cursor-pointer'>
-                    <svg  xmlns="http://www.w3.org/2000/svg" width="16" height="16"  
-                        fill="currentColor" viewBox="0 0 24 24"  
-                        transform="scale(1,-1) rotate(45)">
-                        <path d="M3 13h8v8h2v-8h8v-2h-8V3h-2v8H3z"></path>
-                    </svg>
-                </button>
-                <div className='w-full h-44 aspect-3/2'>
-                    <img src={preview} alt="" className='rounded w-full h-full object-cover'/>
-                </div>
-            </div>   
-        :
-            <div className='w-full h-44 bg-secBackground dark:bg-secDarkBackground rounded flex items-center justify-center flex-col border-text/20 dark:border-darkText/20 border'>
-                <input 
-                    required
-                    type="file"
-                    accept='images/*'
-                    onChange={handleImageChange}
-                    className='hidden w-full h-full '
-                    id='image-upload'
-                    ref={fileInputRef}
-                />
-                <label className='text-text/60 cursor-pointer dark:text-darkText/60 w-full h-full flex items-center justify-center flex-col gap-1' htmlFor="image-upload">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36"  
-                        fill="currentColor" viewBox="0 0 24 24" >
-                        <path d="M21 14V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h9v-2H5v-1.59l3-3 1.29 1.29c.39.39 1.02.39 1.41 0l5.29-5.29 3 3V14h2Zm-4.29-5.71a.996.996 0 0 0-1.41 0l-5.29 5.29-1.29-1.29a.996.996 0 0 0-1.41 0l-2.29 2.29V5h14v5.59L16.73 8.3Z"></path><path d="M8.5 7a1.5 1.5 0 1 0 0 3 1.5 1.5 0 1 0 0-3M21 16h-2v3h-3v2h3v3h2v-3h3v-2h-3z"></path>
-                    </svg>
-                    <span className='text-xs'>Add image</span>
-                </label>
-            </div>
-        }
-
-        {/* category selection */}
-        <div className='w-full h-fit flex flex-col gap-2 text-sm relative bg-secBackground dark:bg-secDarkBackground p-3 rounded-sm border border-text/20 dark:border-darkText/20'>
+                {/* go back to previous page */}
+                {warningBox &&
             
-            <button onClick={() => setDropCategoryActive(!dropCategoryActive)} className='w-full h-fit flex flex-row items-center justify-between'>
-                <h1 className='text-ssm'>{selectedCategory}</h1>
-                <svg  xmlns="http://www.w3.org/2000/svg" width="16" height="16"  
-                    fill="currentColor" viewBox="0 0 24 24" >
-                    <path d="m12 15.41 5.71-5.7-1.42-1.42-4.29 4.3-4.29-4.3-1.42 1.42z"></path>
-                </svg>
-            </button>
+                    <div className='border border-text/20 dark:border-darkText/20 fixed w-4/5 h-36 z-40 bg-background flex-col rounded-sm dark:bg-darkBackground flex justify-between left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 drop-shadow-2xl'>
+                    
+                    <div className='w-full h-fit gap-1 flex p-4 flex-col'>
+                        <h1 className='text-sm font-medium h-fit'>Are you sure you want to exit</h1>
+                        <p className='w-full h-fit text-xs opacity-60'>All your data will be lost</p>
+                    </div>
+                    
+                    <div className='w-full h-full flex items-end p-2 flex-row gap-2'>
+                        <button onClick={() => setWarningBox(false)} className='w-full p-2 bg-secBackground font-medium dark:bg-secBackground/5 h-fit border border-text/20 dark:border-darkText/20 text-sm rounded-sm'>
+                            Cancel
+                        </button>
+                        <button onClick={() => handleNavigate()} className='bg-rose-600 border border-rose-600 w-full h-fit text-darkText font-medium rounded-sm p-2 text-sm'> 
+                            Exit
+                        </button>
+                    </div>
 
-            <div ref={dropDownRef} className={`${dropCategoryActive ? "flex" : "hidden"} dark:bg-secDarkBackground -bottom-44 left-0 w-full h-fit rounded-sm border border-text/20 dark:border-darkText/20 bg-secBackground absolute flex flex-col divide-y-1 divide-text/20 dark:divide-darkText/20`}>
-                {categories.map((category) => (
-                    <button onClick={() => handleCategory(category.category)} key={category.category} className='active:bg-primary/10 flex p-3 px-4 flex-row items-center gap-4 '>
-                        <i className='text-primary dark:text-darkPrimary'>{category.icon}</i>
-                        <p className='text-ssm'>{category.category}</p>
+                    </div>
+                }
+            
+                <div
+                    className={`flex flex-col gap-5 ${warningBox && "blur-lg"}`}
+                >
+                    {/* toggle exit function */}
+                    <button onClick={() => setWarningBox(true)} className='p-2 rounded-full w-fit bg-secBackground dark:bg-secDarkBackground'>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"  
+                        fill="currentColor" viewBox="0 0 24 24" >
+                        <path d="M11.79 6.29 6.09 12l5.7 5.71 1.42-1.42L9.91 13H18v-2H9.91l3.3-3.29z"></path>
+                    </svg>
                     </button>
-                ))}
+
+                    {preview != null ?
+                        <div className='w-full h-full relative'>
+                            <button onClick={() => handleRemoveImage()} className='p-2 absolute right-3 top-3 z-20 bg-darkBackground/80 w-fit rounded-full cursor-pointer'>
+                                <svg  xmlns="http://www.w3.org/2000/svg" width="16" height="16"  
+                                fill="currentColor" viewBox="0 0 24 24"  
+                                transform="scale(1,-1) rotate(45)">
+                                    <path d="M3 13h8v8h2v-8h8v-2h-8V3h-2v8H3z"></path>
+                                </svg>
+                            </button>
+                            <div className='w-full h-44 aspect-3/2'>
+                                <img src={preview} alt="" className='rounded w-full h-full object-cover'/>
+                            </div>
+                        </div>   
+                    :
+                        <div className='w-full h-44 bg-secBackground dark:bg-secDarkBackground rounded flex items-center justify-center flex-col border-text/20 dark:border-darkText/20 border'>
+                            <input 
+                                required
+                                type="file"
+                                accept='images/*'
+                                onChange={handleImageChange}
+                                className='hidden w-full h-full '
+                                id='image-upload'
+                                ref={fileInputRef}
+                            />
+                            <label className='text-text/60 cursor-pointer dark:text-darkText/60 w-full h-full flex items-center justify-center flex-col gap-1' htmlFor="image-upload">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36"  
+                                    fill="currentColor" viewBox="0 0 24 24" >
+                                    <path d="M21 14V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h9v-2H5v-1.59l3-3 1.29 1.29c.39.39 1.02.39 1.41 0l5.29-5.29 3 3V14h2Zm-4.29-5.71a.996.996 0 0 0-1.41 0l-5.29 5.29-1.29-1.29a.996.996 0 0 0-1.41 0l-2.29 2.29V5h14v5.59L16.73 8.3Z"></path><path d="M8.5 7a1.5 1.5 0 1 0 0 3 1.5 1.5 0 1 0 0-3M21 16h-2v3h-3v2h3v3h2v-3h3v-2h-3z"></path>
+                                </svg>
+                                <span className='text-xs'>Add image</span>
+                            </label>
+                        </div>
+                    }
+
+                    {/* category selection */}
+                    <div className='w-full h-fit flex flex-col gap-2 text-sm relative bg-secBackground dark:bg-secDarkBackground p-3 rounded-sm border border-text/20 dark:border-darkText/20'>
+                    
+                        <button onClick={() => setDropCategoryActive(!dropCategoryActive)} className='w-full h-fit flex flex-row items-center justify-between'>
+                            <h1 className='text-ssm'>{selectedCategory}</h1>
+                            <svg  xmlns="http://www.w3.org/2000/svg" width="16" height="16"  
+                                fill="currentColor" viewBox="0 0 24 24" >
+                                <path d="m12 15.41 5.71-5.7-1.42-1.42-4.29 4.3-4.29-4.3-1.42 1.42z"></path>
+                            </svg>
+                        </button>
+
+                        <div ref={dropDownRef} className={`${dropCategoryActive ? "flex" : "hidden"} dark:bg-secDarkBackground -bottom-44 left-0 w-full h-fit rounded-sm border border-text/20 dark:border-darkText/20 bg-secBackground absolute flex flex-col divide-y-1 divide-text/20 dark:divide-darkText/20`}>
+                            {categories.map((category) => (
+                                <button 
+                                    onClick={() => handleCategory(category.category)} 
+                                    key={category.category} 
+                                    className='active:bg-primary/10 flex p-3 px-4 flex-row items-center gap-4 '
+                                >
+                                    <i className='text-primary dark:text-darkPrimary'>{category.icon}</i>
+                                    <p className='text-ssm'>{category.category}</p>
+                                </button>
+                            ))}
+                        </div>
+
+                    </div>
+                
+
+                    {/* title field */}
+                    <div className='w-full h-full flex flex-col gap-1'>
+                        <label 
+                            htmlFor="TitleField"
+                            className=' text-sm'
+                        >
+                            Title
+                        </label>
+                        <textarea
+                            required
+                            type="text" 
+                            id='TitleField'
+                            onChange={(e) => setTitle(e.target.value)}
+                            value={title}
+                            maxLength={128}
+                            className='w-full font-medium text-sm outline-primary dark:outline-darkPrimary border-text/20 dark:border-darkText/20 border p-2 rounded bg-secBackground dark:bg-secDarkBackground resize-none h-24'  
+                        />
+                    </div>
+
+                    {/* content field */}
+                    <div className='w-full h-full flex flex-col gap-1'>
+                        <label 
+                            htmlFor="contentField"
+                            className='text-sm'
+                        >
+                            Content
+                        </label>
+                        <textarea
+                            required
+                            type="text" 
+                            id='contentField'
+                            onChange={(e) => setContent(e.target.value)}
+                            ref={textAreaRef}
+                            className='w-full min-h-52 h-full text-xs outline-primary dark:outline-darkPrimary  border-text/20 dark:border-darkText/20 border p-2 rounded bg-secBackground dark:bg-secDarkBackground resize-none '  
+                        />
+                    </div>
+
+                    {/* submit article */}
+                    <div className='w-full h-full flex justify-end items-center'>
+                        <button onClick={() => {}} className='w-fit h-fit p-2 px-5 bg-primary dark:bg-darkPrimary text-darkText text-sm font-semibold rounded-md'>
+                            Publish
+                        </button>
+                    </div>
+                </div>
+                
             </div>
-
-        </div>
-        
-
-        {/* title field */}
-        <div className='w-full h-full flex flex-col gap-1'>
-            <label 
-                htmlFor="TitleField"
-                className=' text-sm'
-            >
-                Title
-            </label>
-            <textarea
-                required
-                type="text" 
-                id='TitleField'
-                onChange={(e) => setTitle(e.target.value)}
-                value={title}
-                maxLength={128}
-                className='w-full font-medium text-sm outline-primary dark:outline-darkPrimary border-text/20 dark:border-darkText/20 border p-2 rounded bg-secBackground dark:bg-secDarkBackground resize-none h-24'  
-            />
-        </div>
-
-        {/* content field */}
-        <div className='w-full h-full flex flex-col gap-1'>
-            <label 
-                htmlFor="contentField"
-                className='text-sm'
-            >
-                Content
-            </label>
-            <textarea
-                required
-                type="text" 
-                id='contentField'
-                onChange={(e) => setContent(e.target.value)}
-                ref={textAreaRef}
-                className='w-full min-h-52 h-full text-xs outline-primary dark:outline-darkPrimary  border-text/20 dark:border-darkText/20 border p-2 rounded bg-secBackground dark:bg-secDarkBackground resize-none '  
-            />
-        </div>
-
-        {/* submit article */}
-        <div className='w-full h-full flex justify-end items-center'>
-            <button onClick={() => {}} className='w-fit h-fit p-2 px-5 bg-primary dark:bg-darkPrimary text-darkText text-sm font-semibold rounded-md'>
-                Publish
-            </button>
-        </div>
-
-            </div>
-        )
-    }
+        )}
     else {
         return (
             <div className='w-full h-full p-5 flex flex-col items-center justify-center gap-5 pb-24 z-10 relative bg-background dark:bg-darkBackground min-h-screen'>
