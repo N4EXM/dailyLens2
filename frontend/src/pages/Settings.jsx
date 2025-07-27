@@ -50,7 +50,7 @@ const Settings = () => {
           </div>
 
           <UserCard
-            editFunction={() => handleNavigate("UserEdit")}
+            editFunction={() => handleNavigate("ConfirmUser")}
             toggleWarningBox={() => setWarningBox(true)}
           />
 
