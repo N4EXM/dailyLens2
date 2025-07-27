@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import './App.css'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import ProtectedRoute from './components/generalComponents/ProtectedRoute'
 import Home from './pages/Home';
 import Search from './pages/Search' 
 import News from './pages/News'
 import Settings from './pages/Settings'
 import Bookmarked from './pages/Bookmarked'
-import Navbar from './components/generalComponents/Navbar';
+import ConfirmPassword from './pages/ConfirmPassword';
 import CreateArticle from './pages/CreateArticle';
 import Login from './pages/Login'
 import SignUp from './pages/SignUp'
@@ -36,36 +37,46 @@ function App() {
                   element={<Search/>}
                 />
                 <Route
-                path='/Settings' 
-                element={<Settings/>}
+                  path='/Settings' 
+                  element={<Settings/>}
                 />
                 <Route
-                path='/Bookmarked' 
-                element={<Bookmarked/>}
+                  path='/Bookmarked' 
+                  element={<Bookmarked/>}
                 />
                 <Route
-                path='/News' 
-                element={<News/>}
+                  path='/News' 
+                  element={<News/>}
                 />
                 <Route
-                path='/CreateArticle' 
-                element={<CreateArticle/>}
+                  path='/CreateArticle' 
+                  element={<CreateArticle/>}
                 />
                 <Route
-                path='/login' 
-                element={<Login/>}
+                  path='/login' 
+                  element={<Login/>}
                 />
                 <Route
-                path='/SignUp' 
-                element={<SignUp/>}
+                  path='/SignUp' 
+                  element={<SignUp/>}
                 />
                 <Route
-                path='/UserEdit' 
-                element={<UserEdit/>}
+                  path='/UserEdit' 
+                  element={
+                  <ProtectedRoute>
+                    <UserEdit/>
+                  </ProtectedRoute>}
                 />
                 <Route
-                path='/Article/:id' 
-                element={<Article/>}
+                  path='/Article/:id' 
+                  element={<Article/>}
+                />
+                <Route
+                  path='/ConfirmUser'
+                  element={
+                  <ProtectedRoute>
+                    <ConfirmPassword/>
+                  </ProtectedRoute>}
                 />
               </Routes>
               <Sidebar/>

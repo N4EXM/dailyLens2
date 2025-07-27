@@ -49,7 +49,8 @@ const Sidebar = () => {
         "/UserEdit",
         "/login",
         "/register",
-        "/Search"
+        "/Search",
+        "/ConfirmUser"
     ].includes(location.pathname) || 
     location.pathname.startsWith("/Article/"); // This checks for dynamic article routes
 
