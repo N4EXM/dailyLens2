@@ -1,4 +1,4 @@
-import React, { useState, useRef  } from 'react'
+import React, { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useAppContext } from '../context/AppContext'
@@ -7,7 +7,7 @@ const UserEdit = () => {
 
   const { user, authenticatedPassword, isLoading, setIsLoading, error, setError } = useAuth()
   const { warningBox, setWarningBox} = useAppContext()
-  const [selectedImage, setSelectedImage] = useState(null) // 
+  const [imageName, setImageName] = useState(null) // 
   const [preview, setPreview] = useState(user.image || null) // preview the current image
   const fileInputRef = useRef(null); // Ref to access the file input
   const [showPassword, setShowPassword] = useState(false)
@@ -24,6 +24,7 @@ const UserEdit = () => {
 
   const handleExitChange = () => {
     setPassword("")
+    setError("")
     navigate(-1)
     setWarningBox(false)
   }
@@ -31,13 +32,18 @@ const UserEdit = () => {
   const handleImageChange = (e) => {
     e.preventDefault()
     const file = e.target.files[0];
+
+    if (!file) return;
+
+    setImageName(file.name)
+
     if (file) {
-      setSelectedImage(file);
-      // Generate preview URL
+        // Generate preview URL
       const reader = new FileReader();
       reader.onloadend = () => setPreview(reader.result);
       reader.readAsDataURL(file);
     }
+
   };
 
   const handleFormSubmit = async (e) => {
@@ -60,6 +66,7 @@ const UserEdit = () => {
           "Content-type": "application/json"
         },
         body: JSON.stringify({
+          imagePath,
           username,
           password,
           authenticatedPassword,
@@ -70,12 +77,31 @@ const UserEdit = () => {
         })
       })
 
+      if (!response.ok) {
+        setIsLoading(false)
+        throw new Error(data.message || "Registration failed")
+      }
+
+      const data = await response.json()
+
+      if (data.success) {
+        setIsLoading(false)
+        setError("")
+        navigate("/Settings")
+      }
+      else {
+        setIsLoading(false)
+        setError(data.message)
+        return;
+      }
+
     }
     catch {
-
+      setError("failed to send data, try again")
     }
 
   }
+
 
   return (
     <div className={`w-full h-full p-5 flex flex-col gap-5 pb-24 z-10 relative`}>
@@ -115,6 +141,7 @@ const UserEdit = () => {
         {/* inputs for all the users details */}
         <form
           className={`${warningBox && "blur-lg"} flex flex-col gap-5`}
+          onSubmit={(e) => handleFormSubmit(e)}
         >
           
           {/* user image */}
