@@ -4,22 +4,15 @@ import { useAuth } from '../context/AuthContext'
 import { useAppContext } from '../context/AppContext'
 
 const UserEdit = () => {
-  
-  const userDetails = {
-    image: null,
-    name: "John Doe",
-    email: "JohnDoe23@gmail.com",
-    contactNumber: "02234234567",
-    password: "password1234"
-  }
 
-  const { user, authenticatedPassword } = useAuth()
+  const { user, authenticatedPassword, isLoading, setIsLoading, error, setError } = useAuth()
   const { warningBox, setWarningBox} = useAppContext()
   const [selectedImage, setSelectedImage] = useState(null) // 
-  const [preview, setPreview] = useState(userDetails.image || null) // preview the current image
+  const [preview, setPreview] = useState(user.image || null) // preview the current image
   const fileInputRef = useRef(null); // Ref to access the file input
   const [showPassword, setShowPassword] = useState(false)
 
+  // all inputs field values
   const [email, setEmail] = useState(user.email)
   const [username, setUsername] = useState(user.username)
   const [firstName, setFirstName] = useState(user.first_name)
@@ -30,6 +23,7 @@ const UserEdit = () => {
   const navigate = useNavigate()
 
   const handleExitChange = () => {
+    setPassword("")
     navigate(-1)
     setWarningBox(false)
   }
@@ -46,12 +40,50 @@ const UserEdit = () => {
     }
   };
 
+  const handleFormSubmit = async (e) => {
+
+    e.preventDefault()
+
+    setIsLoading(true)
+
+    if (username === "" || firstName === "" || lastName === "" || email === "" || password === "") {
+      setIsLoading(false)
+      setError("fields cannot be empty")
+      return;
+    }
+
+    try {
+
+      const response = await fetch("http://localhost:3000/api/routes/userApi.php?action=changeUserDetails", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json"
+        },
+        body: JSON.stringify({
+          username,
+          password,
+          authenticatedPassword,
+          firstName,
+          lastName,
+          email
+          
+        })
+      })
+
+    }
+    catch {
+
+    }
+
+  }
 
   return (
-    <div className={`w-full h-full p-5 pb-24 z-10 relative`}>
+    <div className={`w-full h-full p-5 flex flex-col gap-5 pb-24 z-10 relative`}>
 
         {/* warning box */}
-        <div className={`${warningBox ? "flex" : "hidden"} border border-text/20 dark:border-darkText/20 fixed w-4/5 h-36 z-40 bg-background flex-col rounded-sm dark:bg-darkBackground flex justify-between left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2`}>
+        <div 
+          className={`${warningBox ? "flex" : "hidden"} border border-text/20 dark:border-darkText/20 fixed w-4/5 h-36 z-40 bg-background flex-col rounded-sm dark:bg-darkBackground flex justify-between left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2`}
+        >
                 
           <div className='w-full h-fit gap-1 flex p-4 flex-col'>
             <h1 className='text-sm font-medium h-fit'>Are you sure you want to exit</h1>
@@ -69,20 +101,22 @@ const UserEdit = () => {
 
         </div>
 
-        <div
+        {/* go back button */}
+        <button 
+          onClick={() => setWarningBox(true)} 
+          className='p-2 rounded-full w-fit bg-secBackground dark:bg-secDarkBackground'
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"  
+            fill="currentColor" viewBox="0 0 24 24" >
+            <path d="M11.79 6.29 6.09 12l5.7 5.71 1.42-1.42L9.91 13H18v-2H9.91l3.3-3.29z"></path>
+          </svg>
+        </button>
+
+        {/* inputs for all the users details */}
+        <form
           className={`${warningBox && "blur-lg"} flex flex-col gap-5`}
         >
-          {/* go back button */}
-          <button 
-            onClick={() => setWarningBox(true)} 
-            className='p-2 rounded-full w-fit bg-secBackground dark:bg-secDarkBackground'
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"  
-              fill="currentColor" viewBox="0 0 24 24" >
-              <path d="M11.79 6.29 6.09 12l5.7 5.71 1.42-1.42L9.91 13H18v-2H9.91l3.3-3.29z"></path>
-            </svg>
-          </button>
-
+          
           {/* user image */}
           <div className='w-full h-fit flex items-center justify-center relative'>
 
@@ -102,7 +136,7 @@ const UserEdit = () => {
               </svg>
             </label>
 
-            <div className={`w-32 h-32 object-center ${userDetails.image === null ? "" : "p-1"} rounded-full bg-background dark:bg-darkBackground border-2 border-text/20 dark:border-darkText/20`}>
+            <div className={`w-32 h-32 object-center ${user.image === null ? "" : "p-1"} rounded-full bg-background dark:bg-darkBackground border-2 border-text/20 dark:border-darkText/20`}>
                 {preview === null ? 
                     <i className='w-full h-full flex items-center justify-center text-text dark:text-darkText'>
                       <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"  
@@ -236,13 +270,24 @@ const UserEdit = () => {
               </div>
             </div>
 
+            <p
+              className='text-sm text-rose-400 dark:text-rose-500 text-center w-full pt-2 font-medium'
+            >
+              {error}
+            </p>
+
             <button 
               className='font-medium p-2 w-full text-darkText bg-primary dark:bg-darkPrimary mt-4 rounded-md'
             >
-              Save
+              {
+                isLoading
+                ? "Processing..."
+                : "Save"
+
+              }
             </button>
           </div>
-        </div>
+        </form>
 
     </div>
   )

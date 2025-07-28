@@ -4,8 +4,7 @@ import { useAuth } from '../context/AuthContext'
 
 const ConfirmPassword= () => {
 
-  const { user, setAuthenticatedPassword } = useAuth()
-  const [isLoading, setIsLoading] = useState(false)
+  const { user, setAuthenticatedPassword, isLoading, setIsLoading } = useAuth()
 
   const [email, setEmail] = useState(user.email)
   const [password, setPassword] = useState("")
